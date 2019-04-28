@@ -1,0 +1,217 @@
+﻿* {
+  margin: 0;
+  padding: 0;
+}
+
+.step-header {
+  height: 3.25rem;
+}
+
+.about-you {
+  padding: 1rem 0.4rem 0 0.4rem;
+  font-size: 0.4rem;
+  font-weight: 550;
+  float: left;
+}
+
+.about-you p:first-of-type {
+  font-size: 0.6rem !important;
+  padding: 0.2rem 0;
+}
+
+.app-avater {
+  float: right;
+  margin-right: 0.8rem;
+  width: 2rem;
+  height: 2rem;
+  margin-top: .5rem;
+  border: 1pt solid #ccc;
+  border-radius: 50%;
+}
+
+.app-avater img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+/* 签到 */
+.boot-step {
+  height: 100vh;
+  width: 100vw;
+  overflow: auto;
+  position: relative;
+  background: url("../images/bg2x.png");
+  background-size: 100% 100%;
+}
+
+.boot-step .contant {
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+  display: none;
+}
+
+.boot-step>p {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  color: #919399;
+  position: absolute;
+  width: 60%;
+  left: 20%;
+  font-size: 0.3rem;
+}
+
+.boot-step>p:first-of-type {
+  bottom: 10%;
+}
+
+.boot-step>p:last-of-type {
+  bottom: 13%;
+}
+
+.boot-step .contant p {
+  font-size: 34px;
+  color: #3E484D;
+  text-align: center;
+}
+
+.boot-step .contant input {
+  width: 100%;
+  font-size: 0.6rem;
+  margin-top: 15%;
+  padding: 5% 0;
+  outline: none;
+  text-indent: .7rem;
+  border: 1px solid #C1A48C;
+  border-radius: 1.3rem;
+}
+
+.boot-step .contant button {
+  width: 100%;
+  font-size: 0.6rem;
+  margin-top: 15%;
+  padding: 5% 0;
+  background: #25AAEF;
+  color: #fff;
+  outline: none;
+  border: 1px solid #25AAEF;
+  border-radius: 1.3rem;
+}
+
+/* 第一部分 */
+.apply-form .mint-cell-text {
+  font-size: 0.4rem !important;
+  letter-spacing: 3px;
+}
+
+.apply-form .mint-cell-title {
+  width: 2.4rem !important;
+}
+
+.apply-form .mint-field-core:-moz-placeholder {
+  font-size: 0.4rem !important;
+}
+
+.apply-form .mint-field-core:-moz-placeholder {
+  font-size: 0.4rem !important;
+}
+
+.apply-form .mint-field-core::-webkit-input-placeholder {
+  font-size: 0.4rem !important;
+}
+
+.apply-form .mint-cell-wrapper {
+  width: 94%;
+  margin: auto;
+  border-bottom: 1px solid #EDEDED !important;
+}
+
+.apply-form .mint-field-core:-ms-input-placeholder {
+  font-size: 0.4rem !important;
+}
+
+.mint-popup {
+  width: 100%;
+}
+
+.next-step {
+  margin-top: 10pt;
+  padding: 0.5rem 0.3rem;
+  position: relative;
+  top: -3pt;
+  background: #E8E8ED;
+}
+
+.next-step .mint-button {
+  padding: 0.3rem 4rem;
+  font-size: 0.4rem;
+}
+
+/* 第二部分 */
+
+.exp-title {
+  height: 1.3rem;
+  padding-left: .5rem;
+  color: #666666;
+  background: #E8E8ED;
+  line-height: 1.34rem;
+}
+
+.mint-cell-title {
+  flex: 1 !important;
+}
+
+.mint-cell-text,
+.mint-field-core {
+  font-size: 0.4rem !important;
+}
+
+.mint-cell-value {
+  flex: 2 !important;
+}
+
+/* 第四部分 */
+
+.other .mint-radiolist .mint-cell {
+  width: 50%;
+  float: left;
+}
+
+.other .mint-radiolist .mint-cell-title {
+  flex: 4 !important;
+}
+
+.other .mint-radiolist .mint-radiolist-title {
+  color: #333333 !important;
+  font-size: 0.4rem !important;
+}
+
+.footer-notice {
+  padding: 0.2rem 0.3rem
+}
+
+.footer-notice span {
+  width: 100%;
+  display: block;
+  margin-top: 10pt;
+  color: #666666;
+  word-wrap: break-word;
+}
+
+.end .contant {
+  margin-top: 200px;
+}
+
+.select .mint-field-other {
+  position: absolute;
+  right: unset;
+}
+
+.select-input {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  background-color: red;
+}

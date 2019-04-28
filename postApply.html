@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1, maximum-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <title id="qdtit">面试签到</title>
+    <!-- 引入样式 -->
+    <script src="./js/polyfill.min.js"></script>
+    <link rel="stylesheet" href="./css/style-2.7.css">
+    <link rel="stylesheet" href="./css/postApply-2.7.css">
+    <link rel="stylesheet" href="./css/mobileSelect.css">
+    <script src="./js/jquery-3.3.1.min.js"></script>
+    <script src="./js/vue.js"></script>
+    <!-- 引入组件库 -->
+    <script src="./js/mintui.js"></script>
+    <script src="./js/rem.js"></script>
+    <script src="./js/mobileSelect.min.js"></script>
+    <script src="./js/commData-2.7.js"></script>
+    <script src="./js/postApply-2.7.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <mt-popup v-model="selectVisible" ref="select" position="bottom">
+            <mt-picker :slots="dataSlots" value-key="value" @change="selectChange"></mt-picker>
+        </mt-popup>
+        <!-- 签到 -->
+        <div v-show="step==0" class="step boot-step">
+            <div class="contant">
+                <p>面试签到</p>
+                <input type="text" placeholder="请输入姓名" v-model="form.name">
+                <input type="text" placeholder="请输入手机号" v-model="form.phone">
+                <button @click="signIn">确认</button>
+            </div>
+            <!-- <p>长沙法度互联网科技有限公司</p>
+            <p>长沙公信诚丰信息技术服务有限公司</p> -->
+        </div>
+        <!-- 第一步 -->
+        <div v-show="step==1" class="step first-step">
+            <div class="step-header">
+                <div class="about-you">
+                    <p>职位申请表(1/4)</p>
+                    <p>基本信息</p>
+                </div>
+                <div class="app-avater">
+                    <img src="./images/avater.jpg" alt="">
+                </div>
+                <!-- <div id="trigger4">单项选择</div> -->
+            </div>
+            <div class="apply-form">
+                <mt-field label="姓名" class="important-input" placeholder="请输入姓名" v-model="form.email"
+                    @blur.native.capture="checkEmail"><span style="color:red">*</span></mt-field>
+                <mt-field label="性别" class="important-input" placeholder="--请选择--" v-model="sex" readonly disable-clear
+                    @click.native.capture="Handler('sex')">
+                    <span style="color:red">*</span>
+                </mt-field>
+                <mt-field label="出生年月" class="important-input" placeholder="请输入出生年月" v-model="form.email"
+                    @blur.native.capture="checkEmail"><span style="color:red">*</span></mt-field>
+                <mt-field label="民族" class="important-input select" placeholder="请输入民族" v-model="form.email">
+                    <p class="select-input" id="trigger4"></p>
+                    <span style=" color:red">*</span>
+                </mt-field>
+                <mt-field label="籍贯" class="important-input" placeholder="请输入籍贯" v-model="form.email"
+                    @blur.native.capture="checkEmail"><span style="color:red">*</span></mt-field>
+                <mt-field label="婚否" class="important-input" placeholder="--请选择--" v-model="marriage" readonly
+                    disable-clear @click.native.capture="Handler('marry')"><span style="color:red">*</span></mt-field>
+                <mt-field label="电话号码" class="important-input" placeholder="请输入电话号码" v-model="form.email"></mt-field>
+                <mt-field label="政治面貌" class="important-input" placeholder="--请选择--" v-model="marriage" readonly
+                    disable-clear @click.native.capture="Handler('marry')"><span style="color:red">*</span></mt-field>
+                <mt-field label="是否退役士兵" class="important-input" placeholder="请输入" v-model="marriage"></mt-field>
+                <mt-field label="身高" class="important-input" placeholder="请输入身高" v-model="form.email"></mt-field>
+                <mt-field label="紧急联系人" class="important-input" placeholder="请输入紧急联系人" v-model="form.email"></mt-field>
+                <mt-field label="联系人电话" class="important-input" placeholder="请输入联系人电话" v-model="form.email"></mt-field>
+                <mt-field label="最高学历" class="important-input" placeholder="--请选择--" v-model="education" readonly
+                    disable-clear @click.native.capture="Handler('edu')"><span style="color:red">*</span></mt-field>
+                <mt-field label="身份证" placeholder="请输入身份证" v-model="form.idcard"></mt-field>
+                <mt-field label="现居地址" class="important-input" placeholder="街道，楼牌号" v-model="form.address"><span
+                        style="color:red">*</span></mt-field>
+                <!-- <mt-field label="工作经验" placeholder="数字0-10" v-model="form.jobAge"></mt-field>
+                <mt-field label="邮箱" class="important-input" placeholder="输入邮箱" v-model="form.email"
+                    @blur.native.capture="checkEmail"><span style="color:red">*</span></mt-field> -->
+
+            </div>
+            <!-- <div>
+                <div class="exp-title">
+                    你期望的待遇
+                </div>
+                <mt-cell title="期望待遇">
+                    <mt-field class="important-input" placeholder="如:5000" v-model="form.expectSalary"><span
+                            style="color:red">*</span></mt-field>
+                </mt-cell>
+                <mt-cell title="到岗日期">
+                    <mt-field class="important-input" placeholder="--请选择--" v-model="form.arriveTime" readonly
+                        disable-clear @click.native.capture="Handler('arriveTime')"><span style="color:red">*</span>
+                    </mt-field>
+                </mt-cell>
+            </div> -->
+            <div class="next-step">
+                <mt-button type="primary" @click="goNext('1')">下一步</mt-button>
+            </div>
+        </div>
+        <!-- 第二步 -->
+        <div v-show="step==2" class="step second-step">
+            <div class="step-header">
+                <div class="about-you">
+                    <p>职位申请表(2/4)</p>
+                    <p>教育经历</p>
+                </div>
+                <div class="app-avater">
+                    <img src="./images/avater.jpg" alt="">
+                </div>
+            </div>
+            <div class="eduExp">
+                <div class="exp-title">
+                    教育经历一
+                </div>
+                <mt-cell title="起止日期">
+                    <mt-field placeholder="开始时间" v-model="form.eduExp1.startDate" disable-clear></mt-field>
+                    <span>至</span>
+                    <mt-field placeholder="结束时间" v-model="form.eduExp1.finishDate" disable-clear></mt-field>
+                </mt-cell>
+                <mt-cell title="学校名称">
+                    <mt-field placeholder="请输入学校名称" v-model="form.eduExp1.school">
+                    </mt-field>
+                </mt-cell>
+                <mt-cell title="专业">
+                    <mt-field placeholder="请输入专业（选填）" v-model="form.eduExp1.specialty">
+                    </mt-field>
+                </mt-cell>
+                <mt-cell title="学历或证书">
+                    <mt-field placeholder="请输入学历或证书" v-model="form.eduExp1.specialty"></mt-field>
+                </mt-cell>
+            </div>
+            <div class="eduExp">
+                <div class="exp-title">
+                    教育经历二
+                </div>
+                <mt-cell title="起止日期">
+                    <mt-field placeholder="开始时间" v-model="form.eduExp1.startDate" disable-clear></mt-field>
+                    <span>至</span>
+                    <mt-field placeholder="结束时间" v-model="form.eduExp1.finishDate" disable-clear></mt-field>
+                </mt-cell>
+                <mt-cell title="学校名称">
+                    <mt-field placeholder="请输入学校名称" v-model="form.eduExp1.school">
+                    </mt-field>
+                </mt-cell>
+                <mt-cell title="专业">
+                    <mt-field placeholder="请输入专业（选填）" v-model="form.eduExp1.specialty">
+                    </mt-field>
+                </mt-cell>
+                <mt-cell title="学历或证书">
+                    <mt-field placeholder="请输入学历或证书" v-model="form.eduExp1.specialty"></mt-field>
+                </mt-cell>
+            </div>
+            <div class="eduExp">
+                <div class="exp-title">
+                    教育经历三
+                </div>
+                <mt-cell title="起止日期">
+                    <mt-field placeholder="开始时间" v-model="form.eduExp1.startDate" disable-clear></mt-field>
+                    <span>至</span>
+                    <mt-field placeholder="结束时间" v-model="form.eduExp1.finishDate" disable-clear></mt-field>
+                </mt-cell>
+                <mt-cell title="学校名称">
+                    <mt-field placeholder="请输入学校名称" v-model="form.eduExp1.school">
+                    </mt-field>
+                </mt-cell>
+                <mt-cell title="专业">
+                    <mt-field placeholder="请输入专业（选填）" v-model="form.eduExp1.specialty">
+                    </mt-field>
+                </mt-cell>
+                <mt-cell title="学历或证书">
+                    <mt-field placeholder="请输入学历或证书" v-model="form.eduExp1.specialty"></mt-field>
+                </mt-cell>
+            </div>
+            <div class="next-step">
+                <mt-button type="primary" @click="goNext('2')">下一步</mt-button>
+            </div>
+        </div>
+        <!-- 第三步 -->
+        <div v-show="step==3" class="step thrid-step">
+            <div class="step-header">
+                <div class="about-you">
+                    <p>职位申请表(3/4)</p>
+                    <p>工作经历</p>
+                </div>
+                <div class="app-avater">
+                    <img src="./images/avater.jpg" alt="">
+                </div>
+            </div>
+            <div class="eduExp">
+                <div class="exp-title">
+                    工作经历一
+                </div>
+                <mt-cell title="起止日期">
+                    <mt-field placeholder="开始时间" v-model="form.workExp1.startDate" disable-clear></mt-field>
+                    <span>至</span>
+                    <mt-field placeholder="结束时间" v-model="form.workExp1.finishDate" disable-clear></mt-field>
+                </mt-cell>
+                <mt-cell title="公司名称">
+                    <mt-field placeholder="请输入" v-model="form.workExp1.company"></mt-field>
+                </mt-cell>
+                <mt-cell title="职位">
+                    <mt-field placeholder="请输入" v-model="form.workExp1.position"></mt-field>
+                </mt-cell>
+                <!-- <mt-cell title="最后薪资">
+                    <mt-field placeholder="请输入" v-model="form.workExp1.salary"></mt-field>
+                </mt-cell>
+                <mt-cell title="证明人">
+                    <mt-field placeholder="请输入(选填)" v-model="form.workExp1.contact"></mt-field>
+                </mt-cell>
+                <mt-cell title="证明人电话">
+                    <mt-field placeholder="请输入(选填)" v-model="form.workExp1.cophone"></mt-field>
+                </mt-cell>
+                <mt-cell title="离职原因">
+                    <mt-field placeholder="请输入(选填)" v-model="form.workExp1.leaveReason"></mt-field>
+                </mt-cell> -->
+            </div>
+            <div class="eduExp">
+                <div class="exp-title">
+                    工作经历二
+                </div>
+                <mt-cell title="起止日期">
+                    <mt-field placeholder="开始时间" v-model="form.workExp2.startDate" disable-clear></mt-field>
+                    <span>至</span>
+                    <mt-field placeholder="结束时间" v-model="form.workExp2.finishDate" disable-clear></mt-field>
+                </mt-cell>
+                <mt-cell title="公司名称">
+                    <mt-field placeholder="请输入" v-model="form.workExp2.company"></mt-field>
+                </mt-cell>
+                <mt-cell title="职位">
+                    <mt-field placeholder="请输入" v-model="form.workExp2.position"></mt-field>
+                </mt-cell>
+            </div>
+            <div class="eduExp">
+                <div class="exp-title">
+                    工作经历三
+                </div>
+                <mt-cell title="起止日期">
+                    <mt-field placeholder="开始时间" v-model="form.workExp3.startDate" disable-clear></mt-field>
+                    <span>至</span>
+                    <mt-field placeholder="结束时间" v-model="form.workExp3.finishDate" disable-clear></mt-field>
+                </mt-cell>
+                <mt-cell title="公司名称">
+                    <mt-field placeholder="请输入" v-model="form.workExp3.company"></mt-field>
+                </mt-cell>
+                <mt-cell title="职位">
+                    <mt-field placeholder="请输入" v-model="form.workExp3.position"></mt-field>
+                </mt-cell>
+            </div>
+            <div class="next-step">
+                <mt-button type="primary" @click="goNext('3')">下一步</mt-button>
+            </div>
+        </div>
+        <!-- 第四步 -->
+        <div v-show="step==4" class="step forth-step">
+            <div class="step-header">
+                <div class="about-you">
+                    <p>职位申请表(4/4)</p>
+                    <p>紧急联系人及其它情况</p>
+                </div>
+                <div class="app-avater">
+                    <img src="./images/avater.jpg" alt="">
+                </div>
+            </div>
+            <div class="eduExp">
+                <div class="exp-title">
+                    紧急情况下联系人
+                </div>
+                <mt-cell title="与本人关系">
+                    <mt-field placeholder="请输入" v-model="form.familyName"><span style="color:red">*</span></mt-field>
+                </mt-cell>
+                <mt-cell title="姓 名">
+                    <mt-field placeholder="请输入" v-model="form.familyName"><span style="color:red">*</span></mt-field>
+                </mt-cell>
+                <mt-cell title="工作单位(职业)">
+                    <mt-field placeholder="请输入" v-model="form.familyPhone"><span style="color:red">*</span></mt-field>
+                </mt-cell>
+                <!-- <mt-cell title="联系地址">
+                    <mt-field placeholder="请输入" v-model="form.familyAddr"><span style="color:red">*</span></mt-field>
+                </mt-cell> -->
+            </div>
+            <div class="eduExp">
+                <div class="exp-title">
+                    紧急情况下联系人
+                </div>
+                <mt-cell title="与本人关系">
+                    <mt-field placeholder="请输入" v-model="form.familyName"></mt-field>
+                </mt-cell>
+                <mt-cell title="姓 名">
+                    <mt-field placeholder="请输入" v-model="form.familyName"></mt-field>
+                </mt-cell>
+                <mt-cell title="工作单位(职业)">
+                    <mt-field placeholder="请输入" v-model="form.familyPhone"></mt-field>
+                </mt-cell>
+            </div>
+            <div class="eduExp">
+                <div class="exp-title">
+                    紧急情况下联系人
+                </div>
+                <mt-cell title="与本人关系">
+                    <mt-field placeholder="请输入" v-model="form.familyName"></mt-field>
+                </mt-cell>
+                <mt-cell title="姓 名">
+                    <mt-field placeholder="请输入" v-model="form.familyName"></mt-field>
+                </mt-cell>
+                <mt-cell title="工作单位(职业)">
+                    <mt-field placeholder="请输入" v-model="form.familyPhone"></mt-field>
+                </mt-cell>
+            </div>
+            <!-- <div>
+                <div class="exp-title">
+                    你的其它情况
+                </div>
+                <div class="other">
+                    <mt-radio title="1、是否曾因行为或工作不佳而被辞退" v-model="form.isDismiss" :options="['是', '否']">
+                    </mt-radio>
+                    <div style="clear: both;"></div>
+                    <mt-cell title="说明情况" v-show="form.isDismiss=='是'">
+                        <mt-field placeholder="请输入" type="text" v-model="form.value1Reason"></mt-field>
+                    </mt-cell>
+                </div>
+                <div class="other">
+                    <mt-radio title="2、曾是否因违反法律行为而被判刑或劳动教养" v-model="form.isBreaklaw" :options="['是', '否']">
+                    </mt-radio>
+                    <div style="clear: both;"></div>
+                    <mt-cell title="说明情况" v-show="form.isBreaklaw=='是'">
+                        <mt-field placeholder="请输入" type="text" v-model="form.value2Reason"></mt-field>
+                    </mt-cell>
+                </div>
+                <div class="other">
+                    <mt-radio title="3、曾是否患有严重疾病、受伤或接受手术治疗" v-model="form.isSicken" :options="['是', '否']">
+                    </mt-radio>
+                    <div style="clear: both;"></div>
+                    <mt-cell title="说明情况" v-show="form.isSicken=='是'">
+                        <mt-field placeholder="请输入" type="text" v-model="form.value3Reason"></mt-field>
+                    </mt-cell>
+                </div>
+                <div class="other">
+                    <mt-radio title="4、是否愿意接受公司对仪容仪表方面的要求" v-model="form.isGroom" :options="['是', '否']">
+                    </mt-radio>
+                    <div style="clear: both;"></div>
+                    <mt-cell title="说明情况" v-show="form.isGroom=='否'">
+                        <mt-field placeholder="请输入" type="text" v-model="form.value4Reason"></mt-field>
+                    </mt-cell>
+                </div>
+                <div class="other">
+                    <mt-radio title="5、公司有无亲属及朋友" v-model="form.isRelation" :options="['是', '否']">
+                    </mt-radio>
+                    <div style="clear: both;"></div>
+                    <div v-show="form.isRelation=='是'">
+                        <mt-cell title="姓名">
+                            <mt-field placeholder="请输入" type="text" v-model="form.rsName"></mt-field>
+                        </mt-cell>
+                        <mt-cell title="部门">
+                            <mt-field placeholder="请输入" type="text" v-model="form.rsDept"></mt-field>
+                        </mt-cell>
+                        <mt-cell title="职务">
+                            <mt-field placeholder="请输入" type="text" v-model="form.rsPost"></mt-field>
+                        </mt-cell>
+                        <mt-cell title="关系">
+                            <mt-field placeholder="请输入你们的关系" type="text" v-model="rstype" readonly disable-clear
+                                @click.native.capture="Handler('rsrel')"></mt-field>
+                        </mt-cell>
+                    </div>
+                </div>
+            </div> -->
+            <div class="footer-notice" style="margin-top:20px;">
+                <h3>应聘声明</h3>
+                <span>
+                    本人兹声明此申请表内所填写之资料均属正确，并无任何缺漏及虚报，否则将无条件接受解雇处分。本人在此授权公司，可向本人目前或前任雇主调查有关本人之任何资料。本人同意接受身体检查，并在获得通过后方正式受雇于贵公司
+                </span>
+            </div>
+            <div class="next-step">
+                <mt-button type="primary" @click="goNext('4')">完成</mt-button>
+            </div>
+        </div>
+        <div v-show="step==5" class="step boot-step end">
+            <div class="contant">
+                <p>填写完成</p>
+                <div class="tt" style="text-align: center; margin-top: 100px; font-size: 16px;">
+                    <span>恭喜职位申请填写完成,请等待面试</span>
+                </div>
+            </div>
+            <!-- <p>长沙法度互联网科技有限公司</p>
+            <p>长沙公信诚丰信息技术服务有限公司</p> -->
+        </div>
+    </div>
+
+</body>
+
+</html>
