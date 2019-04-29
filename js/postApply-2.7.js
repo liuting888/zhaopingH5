@@ -1,4 +1,4 @@
-$(function() {
+$(function () {
 
     init();
 });
@@ -6,7 +6,7 @@ $(function() {
 function init() {
     new Vue({
         el: '#app',
-        data: function() {
+        data: function () {
             return {
                 apiUrl: commData.mobileUrl,
                 educationList: [], //学历
@@ -14,17 +14,28 @@ function init() {
                 nationList: [], //民族
                 politicList: [], //政治面貌
                 sexList: [], //政治面貌
+                deptIdList: [], //应聘地区
+                fileSrc: '',
                 form: {
                     name: "",
                     phone: "",
                     sex: "",
-                    works: [{}, {}, {}],
-                    families: [{}, {}, {}],
-                    educations: [{}, {}, {}],
+                    marriage: "",
+                    nation: "",
+                    politics: "",
+                    education: "",
+                    deptId: "",
+                    wors: [{}, {}, {}],
+                    fams: [{}, {}, {}],
+                    edus: [{}, {}, {}],
                 },
                 sex: "",
-                marriage: '',
-                education: '',
+                marriage: "",
+                nation: "",
+                politics: "",
+                education: "",
+                soldier: "",
+                deptId: "",
                 degree1: "",
                 degree2: '',
                 vitaeId: '',
@@ -34,122 +45,22 @@ function init() {
                 selectVisible: false,
                 startDate: new Date("1990-01-01"),
                 target: "",
-                // marrySlots: [{
-                //     values: [],
-                //     textAlign: 'center'
-                // }],
-                // eduSlots: [{
-                //     values: [],
-                //     textAlign: 'center'
-                // }],
-                // relationSlots: [{
-                //     values: [],
-                //     textAlign: 'center'
-                // }],
                 dataSlots: [{
                     values: [],
                     textAlign: 'center'
                 }],
                 data: [{
-                        id: '1',
-                        title: 'A'
-                    },
-                    {
-                        id: '1',
-                        title: 'B'
-                    },
+                    id: '1',
+                    value: 'A'
+                },
+                {
+                    id: '1',
+                    value: 'B'
+                },
                 ]
             };
         },
-        mounted() {
-            var that = this;
-            var nation = new MobileSelect({
-                trigger: "#nation",
-                title: "选择民族",
-                wheels: [{
-                    data: this.data
-                        // data: [{
-                        //         id: '1',
-                        //         title: 'A'
-                        //     },
-                        //     {
-                        //         id: '1',
-                        //         title: 'B'
-                        //     },
-                        // ]
-                }],
-                keyMap: {
-                    id: 'id',
-                    value: 'title'
-                },
-                callback: function(indexArr, data) {
-                    console.log(indexArr, data);
-                    that.form.education = data[0].nation;
-                }
-            });
-            var sex = new MobileSelect({
-                trigger: "#sex",
-                title: "选择性别",
-                wheels: [{
-                    data: this.data
-                }],
-                keyMap: {
-                    id: 'id',
-                    value: 'title'
-                },
-                callback: function(indexArr, data) {
-                    console.log(indexArr, data);
-                    that.form.education = data[0].sex;
-                }
-            });
-            var marriage = new MobileSelect({
-                trigger: "#marriage",
-                title: "选择婚否",
-                wheels: [{
-                    data: this.data
-                }],
-                keyMap: {
-                    id: 'id',
-                    value: 'title'
-                },
-                callback: function(indexArr, data) {
-                    console.log(indexArr, data);
-                    that.form.education = data[0].marriage;
-                }
-            });
-            var politics = new MobileSelect({
-                trigger: "#politics",
-                title: "选择政治面貌",
-                wheels: [{
-                    data: this.data
-                }],
-                keyMap: {
-                    id: 'id',
-                    value: 'title'
-                },
-                callback: function(indexArr, data) {
-                    console.log(indexArr, data);
-                    that.form.education = data[0].politics;
-                }
-            });
-            var education = new MobileSelect({
-                trigger: "#education",
-                title: "选择最高学历",
-                wheels: [{
-                    data: this.data
-                }],
-                keyMap: {
-                    id: 'id',
-                    value: 'title'
-                },
-                callback: function(indexArr, data) {
-                    console.log(indexArr, data);
-                    that.form.education = data[0].id;
-                }
-            });
-
-        },
-        created: function() {
+        created: function () {
             var that = this;
             that.t = commMethod.GetSearchArgs().t;
             // that.getMarList();
@@ -158,30 +69,150 @@ function init() {
             $(".boot-step").css("height", $(window).height() + "px");
             $(".contant").css("margin-top", Math.floor(($(window).height() - $(".contant").outerHeight()) / 2) + "px").show();
             // that.getQrcodeTime();
+
             that.getSelectFromDict();
+            that.getDeptId();
+
         },
         methods: {
+            changepic(file) {
+                var that = this;
+                var reads = new FileReader();
+                f = document.getElementById('file').files[0];
+                that.form.photo = f;
+                reads.readAsDataURL(f);
+                reads.onload = function (e) {
+                    that.fileSrc = this.result;
+                };
+
+            },
+            //获取应聘地区
+            getDeptId: function () {
+                var vm = this;
+                $.ajax({
+                    url: vm.apiUrl + "/searchDeptsByFenju",
+                    type: "POST",
+                    data: {},
+                    dataType: "json",
+                    success: function (data) {
+                        vm.deptIdList = data.list; //派出所
+                        var that = vm;
+                        var deptId = new MobileSelect({
+                            trigger: "#deptId",
+                            title: "选择派出所",
+                            wheels: [{
+                                data: that.deptIdList
+                            }],
+                            keyMap: {
+                                id: 'deptId',
+                                value: 'deptName'
+                            },
+                            callback: function (indexArr, data) {
+                                that.form.deptId = data[0].deptId;
+                                that.deptId = data[0].deptName;
+                            }
+                        });
+
+                    },
+                    error: function (err) { }
+                });
+            },
             //获取字典
-            getSelectFromDict: function() {
+            getSelectFromDict: function () {
                 var vm = this;
                 $.ajax({
                     url: vm.apiUrl + "/getRecruitDetailDict",
                     type: "POST",
                     data: {},
                     dataType: "json",
-                    success: function(data) {
+                    success: function (data) {
                         // console.log(data);
                         vm.educationList = data.education; //学历
                         vm.marryList = data.marry; //婚姻
                         vm.nationList = data.nation; //民族
                         vm.politicList = data.politic; //政治面貌
+                        vm.sexList = data.sex; //政治面貌
+                        var that = vm;
+                        var nation = new MobileSelect({
+                            trigger: "#nation",
+                            title: "选择民族",
+                            wheels: [{
+                                data: that.nationList
+                            }],
+                            callback: function (indexArr, data) {
+                                that.form.nation = data[0].id;
+                                that.nation = data[0].value;
+                            }
+                        });
+                        var sex = new MobileSelect({
+                            trigger: "#sex",
+                            title: "选择性别",
+                            wheels: [{
+                                data: that.sexList
+                            }],
+                            callback: function (indexArr, data) {
+                                that.form.sex = data[0].id;
+                                that.sex = data[0].value;
+                            }
+                        });
+                        var marriage = new MobileSelect({
+                            trigger: "#marriage",
+                            title: "选择婚否",
+                            wheels: [{
+                                data: that.marryList
+                            }],
+                            callback: function (indexArr, data) {
+                                that.form.marriage = data[0].id;
+                                that.marriage = data[0].value;
+                            }
+                        });
+                        var politics = new MobileSelect({
+                            trigger: "#politics",
+                            title: "选择政治面貌",
+                            wheels: [{
+                                data: that.politicList
+                            }],
+                            callback: function (indexArr, data) {
+                                that.form.politics = data[0].id;
+                                that.politics = data[0].value;
+                            }
+                        });
+                        var education = new MobileSelect({
+                            trigger: "#education",
+                            title: "选择最高学历",
+                            wheels: [{
+                                data: that.educationList
+                            }],
+                            callback: function (indexArr, data) {
+                                that.form.education = data[0].id;
+                                that.education = data[0].value;
+                            }
+                        });
+                        var soldier = new MobileSelect({
+                            trigger: "#soldier",
+                            title: "请选择",
+                            wheels: [{
+                                data: [{
+                                    id: '0',
+                                    value: '是'
+                                },
+                                {
+                                    id: '1',
+                                    value: '否'
+                                },
+                                ]
+                            }],
+                            callback: function (indexArr, data) {
+                                that.form.soldier = data[0].id;
+                                that.soldier = data[0].value;
+                            }
+                        });
                     },
-                    error: function(err) {}
+                    error: function (err) { }
                 });
-                return defer;
             },
             //获取二维码有效期
-            getQrcodeTime: function() {
+            getQrcodeTime: function () {
                 var that = this;
                 $.ajax({
                     type: 'POST',
@@ -190,13 +221,13 @@ function init() {
                         t: that.t
                     },
                     dataType: 'text',
-                    success: function(res) {
+                    success: function (res) {
                         res = JSON.parse(res);
                         var nowTime = new Date(),
                             month = nowTime
-                            .getMonth() + 1,
+                                .getMonth() + 1,
                             day = nowTime
-                            .getDate();
+                                .getDate();
                         nowTime = '' + nowTime.getFullYear() +
                             (month < 10 ? '0' : '') + month +
                             (day < 10 ? '0' : '') + day;
@@ -209,169 +240,8 @@ function init() {
                     }
                 });
             },
-            // 签到
-            signIn: function() {
-                var that = this;
-                $.ajax({
-                    type: 'POST',
-                    url: that.apiUrl + '/queryVitaeIdByPhone',
-                    data: {
-                        phone: that.form.phone,
-                        name: that.form.name
-                    },
-                    dataType: 'text',
-                    success: function(res) {
-                        res = JSON.parse(res);
-                        if (res.code == 1) {
-                            that.$messagebox("提示", "签到成功");
-                            var arr = res.body.split(",");
-                            that.vitaeId = arr[0];
-                            $.ajaxSetup({
-                                headers: {
-                                    "hrm-token": arr[1]
-                                }
-                            });
-                            that.getApplicationInfo(arr[0]);
-                            $("#qdtit").text("填写职位申请表");
-                        } else {
-                            that.$messagebox("提示", res.body);
-                        }
-                    }
-                });
-            },
-
-            //获取简历申请表信息
-            getApplicationInfo: function(val) {
-                var that = this;
-                $.ajax({
-                    type: 'POST',
-                    url: that.apiUrl + '/queryApplicationInfoByVitaeId',
-                    data: {
-                        vitaeId: val
-                    },
-                    dataType: 'json',
-                    success: function(res) {
-                        that.$data.step = 1;
-                        res = res.body;
-                        if (res.msg) return true;
-                        that.sex = res.application.sex == 1 ? "男" : '女';
-                        that.form.sex = res.application.sex;
-                        that.form.idcard = res.application.idcard;
-                        that.form.age = res.application.age + '';
-                        that.marriage = res.application.marrDesc;
-                        that.form.marriage = res.application.marriage;
-                        that.form.address = res.application.address;
-                        that.form.jobAge = res.application.jobAge + '';
-                        that.form.email = res.application.email;
-                        that.form.education = res.application.education;
-                        that.education = res.application.eduDesc;
-                        that.form.expectSalary = res.application.expectSalary + '';
-                        that.form.arriveTime = res.application.arriveTime;
-                        that.form.eduExp1.startDate = res.education[0].startDate;
-                        that.form.eduExp1.finishDate = res.education[0].finishDate;
-                        that.form.eduExp1.school = res.education[0].school;
-                        that.form.eduExp1.degree = res.education[0].degree;
-                        that.degree1 = res.education[0].degreeName;
-                        that.form.eduExp1.specialty = res.education[0].specialty;
-                        that.form.eduExp2.startDate = res.education[1].startDate;
-                        that.form.eduExp2.finishDate = res.education[1].finishDate;
-                        that.form.eduExp2.school = res.education[1].school;
-                        that.form.eduExp2.degree = res.education[1].degree;
-                        that.degree2 = res.education[1].degreeName;
-                        that.form.eduExp2.specialty = res.education[1].specialty;
-                        that.form.workExp1.startDate = res.workexper[0].startDate;
-                        that.form.workExp1.finishDate = res.workexper[0].finishDate;
-                        that.form.workExp1.company = res.workexper[0].company;
-                        that.form.workExp1.position = res.workexper[0].position;
-                        that.form.workExp1.salary = res.workexper[0].salary;
-                        that.form.workExp1.contact = res.workexper[0].contact;
-                        that.form.workExp1.cophone = res.workexper[0].cophone;
-                        that.form.workExp1.leaveReason = res.workexper[0].leaveReason;
-                        that.form.workExp2.startDate = res.workexper[1].startDate;
-                        that.form.workExp2.finishDate = res.workexper[1].finishDate;
-                        that.form.workExp2.company = res.workexper[1].company;
-                        that.form.workExp2.position = res.workexper[1].position;
-                        that.form.workExp2.salary = res.workexper[1].salary + '';
-                        that.form.workExp2.contact = res.workexper[1].contact;
-                        that.form.workExp2.cophone = res.workexper[1].cophone;
-                        that.form.workExp2.leaveReason = res.workexper[1].leaveReason;
-                        that.form.workExp3.startDate = res.workexper[2].startDate;
-                        that.form.workExp3.finishDate = res.workexper[2].finishDate;
-                        that.form.workExp3.company = res.workexper[2].company;
-                        that.form.workExp3.position = res.workexper[2].position;
-                        that.form.workExp3.salary = res.workexper[2].salary + '';
-                        that.form.workExp3.contact = res.workexper[2].contact;
-                        that.form.workExp3.cophone = res.workexper[2].cophone;
-                        that.form.workExp3.leaveReason = res.workexper[2].leaveReason;
-                        that.familyType = res.application.familyTypeDesc;
-                        that.form.familyType = res.application.familyType;
-                        that.form.familyName = res.application.familyName;
-                        that.form.familyPhone = res.application.familyPhone;
-                        that.form.familyAddr = res.application.familyAddr;
-                        that.form.isDismiss = res.application.isDismiss == '1' ? '是' : '否';
-                        that.form.isBreaklaw = res.application.isBreaklaw == '1' ? '是' : '否';
-                        that.form.isSicken = res.application.isSicken == '1' ? '是' : '否';
-                        that.form.isGroom = res.application.isGroom == '1' ? '是' : '否';
-                        that.form.isRelation = res.application.isRelation == '1' ? '是' : '否';
-                        that.form.rsName = res.application.rsName;
-                        that.form.rsDept = res.application.rsDept;
-                        that.form.rsPost = res.application.rsPost;
-                        that.form.rstype = res.application.rstype;
-                        that.rstype = res.application.rstypeDesc;
-                    }
-                });
-            },
-            // //获取婚姻状况
-            // getMarList: function() {
-            //     var that = this;
-            //     $.ajax({
-            //         type: 'POST',
-            //         url: that.apiUrl + '/queryDictsByItemType',
-            //         data: {
-            //             type: "marriage"
-            //         },
-            //         dataType: 'json',
-            //         success: function(res) {
-            //             res = JSON.parse(res.body);
-            //             that.$data.marrySlots[0].values = res;
-            //         }
-            //     });
-            // },
-
-            // //获取关系
-            // getRelationList: function() {
-            //     var that = this;
-            //     $.ajax({
-            //         type: 'POST',
-            //         url: that.apiUrl + '/queryDictsByItemType',
-            //         data: {
-            //             type: "relation"
-            //         },
-            //         dataType: 'json',
-            //         success: function(res) {
-            //             res = JSON.parse(res.body);
-            //             that.$data.relationSlots[0].values = res;
-            //         }
-            //     });
-            // },
-            // //获取学历列表
-            // getXLList: function() {
-            //     var that = this;
-            //     $.ajax({
-            //         type: 'POST',
-            //         url: that.apiUrl + '/queryDictsByItemType',
-            //         data: {
-            //             type: "education"
-            //         },
-            //         dataType: 'json',
-            //         success: function(res) {
-            //             res = JSON.parse(res.body);
-            //             that.$data.eduSlots[0].values = res;
-            //         }
-            //     });
-            // },
             //pop打开
-            Handler: function(select) {
+            Handler: function (select) {
                 var that = this;
                 that.selectType = select;
                 that.$refs.select.open();
@@ -405,7 +275,7 @@ function init() {
                 }
             },
             //pop确认
-            selectChange: function(parma, value) {
+            selectChange: function (parma, value) {
                 var that = this;
                 if (that.selectType == 'sex') {
                     that.sex = value[0].value;
@@ -433,162 +303,69 @@ function init() {
                 }
             },
             //验证邮箱 
-            checkEmail: function() {
+            checkEmail: function () {
                 var regEmial = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$"); //邮箱验证
                 if (!regEmial.test(this.form.email)) {
                     this.$messagebox("提示", "请输入正确的邮箱");
                     this.form.email = '';
                 }
             },
-            goNext: function(val) {
+            addRecruit: function () {
+                var defer = $.Deferred();
+                var vm = this;
+                // 用表单来初始化
+                var formData = new FormData();
+                for (var i in vm.form) {
+                    if (i == "wors" || i == "fams" || i == "edus") {
+                        formData.append(i, JSON.stringify(vm.form[i]));
+                    } else {
+                        formData.append(i, vm.form[i]);
+                    }
+                }
+                $.ajax({
+                    url: vm.apiUrl + "/addRecruit",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    // dataType: "json",
+                    success: function (data) {
+                        if (data.errorCode == 0) {
+                            vm.step = 5;
+                        } else {
+                            vm.$messagebox("提示", "添加失败，请重新填写");
+                            vm.step = 1;
+                        }
+                        defer.resolve();
+                    },
+                    error: function (err) {
+                        vm.$messagebox("提示", "添加失败，请重新填写");
+                        vm.step = 1;
+                        defer.reject();
+                    }
+                });
+                return defer;
+            },
+            goNext: function (val) {
                 var that = this;
-                that.step = parseInt(val) + 1;
-                // switch (val) {
-                //     case '1':
-                //         var regPos = /^\d+(\.\d+)?$/; //非负浮点数
-                //         if (!regPos.test(that.form.expectSalary)) {
-                //             that.$messagebox("提示", "请输入正确的期望薪资");
-                //         } else {
-                //             if (that.form.email == '' || that.form.age == '' || that.form.marriage == '' || that.form.address == '' || that.form.education == '' || that.form.expectSalary == '' || that.form.arriveTime == '') {
-                //                 that.$messagebox("提示", "红色标记处不能为空");
-                //             } else {
-                //                 $.ajax({
-                //                     type: 'POST',
-                //                     url: that.apiUrl + '/insertRczpApplication',
-                //                     data: {
-                //                         vitaeId: that.vitaeId,
-                //                         name: that.form.name.trim(),
-                //                         sex: that.form.sex,
-                //                         idcard: that.form.idcard.trim(),
-                //                         age: that.form.age,
-                //                         phone: that.form.phone.trim(),
-                //                         email: that.form.email.trim(),
-                //                         jobAge: that.form.jobAge.trim(),
-                //                         marriage: that.form.marriage,
-                //                         address: that.form.address.trim(),
-                //                         education: that.form.education,
-                //                         eduDesc: that.education,
-                //                         expectSalary: that.form.expectSalary.trim(),
-                //                         arriveTime: that.form.arriveTime
-                //                     },
-                //                     dataType: 'json',
-                //                     success: function(res) {
-                //                         if (res.code == 1) {
-                //                             that.$messagebox("提示", "填写成功");
-                //                             setTimeout(function() {
-                //                                 that.$data.step = 2;
-                //                             }, 500);
-                //                         } else {
+                if (val == 1) {
+                    for (var i in that.form) {
+                        if (i == "wors" || i == "fams" || i == "edus") {
 
-                //                         }
-                //                     }
-                //                 });
-                //             }
-                //         }
-                //         break;
-                //     case '2':
-                //         if (that.form.eduExp1.startDate == '' || that.form.eduExp1.finishDate == '' || that.form.eduExp1.school == '' || that.form.eduExp1.degree == '') {
-                //             that.$messagebox("提示", "红色标记处不能为空");
-                //         } else {
-                //             $.ajax({
-                //                 type: 'POST',
-                //                 url: that.apiUrl + '/insertEducation',
-                //                 data: {
-                //                     vitaeId: that.vitaeId,
-                //                     education1: JSON.stringify(that.form.eduExp1),
-                //                     education2: JSON.stringify(that.form.eduExp2),
-                //                 },
-                //                 dataType: 'json',
-                //                 success: function(res) {
-                //                     if (res.code == 1) {
-                //                         that.$messagebox("提示", "填写成功");
-                //                         setTimeout(function() {
-                //                             that.$data.step = 3;
-                //                         }, 500);
-                //                     } else {
+                        } else {
+                            // formData.append(i, that.form[i]);
+                            if (!that.form[i]) {
+                                return this.$messagebox("提示", "请完整输入信息");
+                            }
+                        }
+                    }
+                }
+                if (that.step == 4) {
+                    that.addRecruit();
+                } else {
+                    that.step = parseInt(val) + 1;
+                }
 
-                //                     }
-                //                 }
-                //             });
-                //         }
-                //         break;
-                //     case '3':
-                //         $.ajax({
-                //             type: 'POST',
-                //             url: that.apiUrl + '/insertWorkexper',
-                //             data: {
-                //                 vitaeId: that.vitaeId,
-                //                 work1: JSON.stringify(that.form.workExp1),
-                //                 work2: JSON.stringify(that.form.workExp2),
-                //                 work3: JSON.stringify(that.form.workExp3),
-                //             },
-                //             dataType: 'json',
-                //             success: function(res) {
-                //                 if (res.code == 1) {
-                //                     that.$messagebox("提示", "填写成功");
-                //                     setTimeout(function() {
-                //                         that.$data.step = 4;
-                //                     }, 500);
-                //                 } else {
-
-                //                 }
-                //             }
-                //         });
-
-                //         break;
-                //     case '4':
-                //         var reg = /^1\d{10}$/;
-                //         if (that.form.familyType == '' || that.form.familyName == '' || that.form.familyPhone == '' || that.form.familyAddr == '') {
-                //             that.$messagebox("提示", "红色标记处不能为空");
-                //         } else {
-                //             if (!reg.test(that.form.familyPhone)) {
-                //                 that.$messagebox("提示", "请填写正确手机号");
-                //             } else {
-                //                 $.ajax({
-                //                     type: 'POST',
-                //                     url: that.apiUrl + '/updateRczpApplication',
-                //                     data: {
-                //                         inviteId: that.vitaeId,
-                //                         vitaeId: that.vitaeId,
-                //                         name: that.form.name.trim(),
-                //                         idcard: that.form.idcard.trim(),
-                //                         phone: that.form.phone.trim(),
-                //                         familyType: that.form.familyType,
-                //                         familyName: that.form.familyName.trim(),
-                //                         familyPhone: that.form.familyPhone.trim(),
-                //                         familyAddr: that.form.familyAddr.trim(),
-                //                         isDismiss: that.form.isDismiss == "是" ? "1" : "0",
-                //                         isBreaklaw: that.form.isBreaklaw == "是" ? "1" : "0",
-                //                         isSicken: that.form.isSicken == "是" ? "1" : "0",
-                //                         isGroom: that.form.isGroom == "是" ? "1" : "0",
-                //                         isRelation: that.form.isRelation == "是" ? "1" : "0",
-                //                         rsName: that.form.rsName.trim(),
-                //                         rsDept: that.form.rsDept.trim(),
-                //                         rsPost: that.form.rsPost.trim(),
-                //                         rstype: that.form.rstype,
-                //                         drivers: '',
-                //                         qualify: '',
-                //                         other: '',
-                //                     },
-                //                     dataType: 'json',
-                //                     success: function(res) {
-                //                         if (res.code == 1) {
-                //                             that.$messagebox("提示", "填写成功,等待面试");
-                //                             that.form.name = "";
-                //                             that.form.phone = "";
-                //                             setTimeout(function() {
-                //                                 that.$data.step = 5;
-                //                             }, 500);
-                //                         } else {}
-                //                     }
-                //                 });
-                //             }
-                //         }
-                //         break;
-                //     default:
-                //         break;
-
-                // }
             }
         }
     });
