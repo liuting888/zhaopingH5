@@ -215,3 +215,11 @@
   height: 50px;
   line-height: 48px;
 }
+.inputfile{
+  opacity: 0;
+}
+.btn-success{
+  position: absolute;
+  top: 1.7rem;
+  right: 1.2rem;
+}

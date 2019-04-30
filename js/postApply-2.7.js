@@ -42,6 +42,9 @@ function init() {
                 type: "",
                 selectType: '',
                 step: 1,
+                activePicker: false,
+                birth:new Date("1990-01-01"),
+                flag: true,
                 selectVisible: false,
                 startDate: new Date("1990-01-01"),
                 target: "",
@@ -69,12 +72,46 @@ function init() {
             $(".boot-step").css("height", $(window).height() + "px");
             $(".contant").css("margin-top", Math.floor(($(window).height() - $(".contant").outerHeight()) / 2) + "px").show();
             // that.getQrcodeTime();
-
+            $("#nation,#deptId,#sex,#marriage,#politics,#education,#soldier").focus(function () {
+                document.activeElement.blur();
+            });
             that.getSelectFromDict();
             that.getDeptId();
 
         },
+        computed: {
+            showOrHide: function () {
+                if (this.activePicker) {
+                    return 'block'
+                } else {
+                    return 'none'
+                }
+            }
+        },
         methods: {
+            cancelPicker(val) {
+                console.log(val);
+                this.activePicker = false;
+                Date.prototype.Format = function (fmt) { //author: meizz
+                    var o = {
+                        "M+": this.getMonth() + 1, //月份
+                        "d+": this.getDate(), //日
+                        "h+": this.getHours(), //小时
+                        "m+": this.getMinutes(), //分
+                        "s+": this.getSeconds(), //秒
+                        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+                        "S": this.getMilliseconds() //毫秒
+                    };
+                    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+                    for (var k in o)
+                    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                    return fmt;
+                };
+                this.form.birth=val.Format("yyyy-MM-dd");
+            },
+            getTime() {
+                this.activePicker = true;
+            },
             changepic(file) {
                 var that = this;
                 var reads = new FileReader();
@@ -332,15 +369,18 @@ function init() {
                     success: function (data) {
                         if (data.errorCode == 0) {
                             vm.step = 5;
+                            vm.flag = true;
                         } else {
-                            vm.$messagebox("提示", "添加失败，请重新填写");
+                            vm.$messagebox("提示", data.errorMsg);
                             vm.step = 1;
+                            vm.flag = true;
                         }
                         defer.resolve();
                     },
                     error: function (err) {
                         vm.$messagebox("提示", "添加失败，请重新填写");
                         vm.step = 1;
+                        vm.flag = true;
                         defer.reject();
                     }
                 });
@@ -361,7 +401,10 @@ function init() {
                     }
                 }
                 if (that.step == 4) {
-                    that.addRecruit();
+                    if (that.flag == true) {
+                        that.addRecruit();
+                        that.flag = false;
+                    }
                 } else {
                     that.step = parseInt(val) + 1;
                 }
